@@ -1,4 +1,5 @@
 const axios = require("axios");
+const bcrypt = require("bcryptjs");
 const db = require("./models");
 const tk = require("../auth/token-service");
 
@@ -13,7 +14,7 @@ module.exports = server => {
 function register(req, res) {
   // implement user registration
   let user = req.body;
-  const hash = bycrypt.hashSync(user.password, 12);
+  const hash = bcrypt.hashSync(user.password, 12);
   user.password = hash;
   db.add(user)
     .then(saved => {
