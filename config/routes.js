@@ -1,13 +1,13 @@
-const axios = require('axios');
-const db = require('./models')
-const tk = require('../auth/token-service')
+const axios = require("axios");
+const db = require("./models");
+const tk = require("../auth/token-service");
 
-const { authenticate } = require('../auth/authenticate');
+const { authenticate } = require("../auth/authenticate");
 
 module.exports = server => {
-  server.post('/api/register', register);
-  server.post('/api/login', login);
-  server.get('/api/jokes', authenticate, getJokes);
+  server.post("/api/register", register);
+  server.post("/api/login", login);
+  server.get("/api/jokes", authenticate, getJokes);
 };
 
 function register(req, res) {
@@ -16,8 +16,12 @@ function register(req, res) {
   const hash = bycrypt.hashSync(user.password, 12);
   user.password = hash;
   db.add(user)
-  .then(saved => {res.status(201).json(saved)})
-  .catch(err => {res.status(500).json(err)})
+    .then(saved => {
+      res.status(201).json(saved);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
 }
 
 function login(req, res) {
@@ -28,9 +32,9 @@ function login(req, res) {
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = tk.generateToken(user);
-        res.status(200).json({message: `Welcome ${user.username}!`, token});
+        res.status(200).json({ message: `Welcome ${user.username}!`, token });
       } else {
-        res.status(401).json({message: 'Invalid Credentials'});
+        res.status(401).json({ message: "Invalid Credentials" });
       }
     })
     .catch(error => {
@@ -40,15 +44,15 @@ function login(req, res) {
 
 function getJokes(req, res) {
   const requestOptions = {
-    headers: { accept: 'application/json' },
+    headers: { accept: "application/json" }
   };
 
   axios
-    .get('https://icanhazdadjoke.com/search', requestOptions)
+    .get("https://icanhazdadjoke.com/search", requestOptions)
     .then(response => {
       res.status(200).json(response.data.results);
     })
     .catch(err => {
-      res.status(500).json({ message: 'Error Fetching Jokes', error: err });
+      res.status(500).json({ message: "Error Fetching Jokes", error: err });
     });
 }
