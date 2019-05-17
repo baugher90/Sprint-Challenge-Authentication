@@ -10,6 +10,12 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
+  let user = req.body;
+  const hash = bycrypt.hashSync(user.password, 12);
+  user.password = hash;
+  db.add(user)
+  .then(saved => {res.status(201).json(saved)})
+  .catch(err => {res.status(500).json(err)})
 }
 
 function login(req, res) {
